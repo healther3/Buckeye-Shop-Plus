@@ -31,7 +31,7 @@ export default function CommentCard({ comment }: {comment: Comment}){
     console.log(users);
     const userName = comment.users?.name;
     const userAvatar = comment.users?.imageUrl;
-    const dateStr = new Date(comment.create_data).toLocaleDateString('en-US', {
+    const dateStr = new Date(comment.create_date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
