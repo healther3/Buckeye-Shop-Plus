@@ -744,10 +744,10 @@ export async function createUserAddress(user_id: string, prevState: UserAddressS
         }
 
         await sql`
-        INSERT INTO user_address (user_id, label, recipient_name, phone_number, state, city, zip_code, street_address_1, street_address_2, is_default)
+        INSERT INTO user_address (user_id, label, recipient_name, phone_number, state, city, zip_code, street_address_1, street_address_2, is_default, latitude, longitude)
         VALUES (${user_id}, ${label}, ${recipient_name}, ${phone_number},
-        ${state}, ${city},${zip_code??null},${street_address_1},${street_address_2??null},
-        ${rawIsDefault??false},${latValue ?? null},${lngValue ?? null})`;
+        ${state}, ${city}, ${zip_code ?? null}, ${street_address_1}, ${street_address_2 ?? null},
+        ${rawIsDefault ?? false}, ${latValue ?? null}, ${lngValue ?? null})`;
     }catch(error) {
       console.error('database error', error); 
         return {
