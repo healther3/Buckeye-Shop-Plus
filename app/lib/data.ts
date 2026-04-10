@@ -9,7 +9,14 @@ const COMMENT_PER_PAGE = 12;
 
 export async function fetchUsers(){
     try {
-        const users = await sql <User[]> `SELECT * FROM users`;
+        const users = await sql <User[]> `
+            SELECT 
+                id, 
+                name, 
+                email, 
+                create_date AS "createDate", 
+                image_url AS "imageUrl"
+            FROM users`;
         return users;
     } catch (error) {
         console.error('error fetching users', error);
@@ -30,7 +37,7 @@ export async function fetchUserByAuthUser() {
       id, 
       name, 
       email,
-      create_date AS "createData",
+      create_date AS "createDate",
       image_url AS "imageUrl"
       FROM users
       WHERE email = ${email};`

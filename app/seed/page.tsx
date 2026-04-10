@@ -9,7 +9,7 @@ export default async function UsersPage() {
       <ul>
         {users.map((user: any) => (
           <li key={user.id}>
-            {user.name} - {user.email} - {user.password}
+            {user.name} - {user.email}
           </li>
         ))}
       </ul>
