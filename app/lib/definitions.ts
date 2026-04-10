@@ -40,7 +40,7 @@ export type Comment = {
     product_id: string;
     rating: number;
     comment:  string;
-    create_data: string;
+    create_date: string;
     users: User | null;
 }
 

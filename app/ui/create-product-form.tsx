@@ -9,6 +9,19 @@ export default function CreateProductForm(){
     const { hasPermission } = usePermissions();
     const canCreateProduct = hasPermission('create_product'); 
     
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [errorMsg, setErrorMsg] = useState('');
+    const initialState : ProductState = {message : '', errors:{}};
+    const [state, formAction, isPending] = useActionState(createProduct, initialState);
+    
+    useEffect(() => {
+      return () => {
+        if (previewUrl && previewUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(previewUrl);
+        }
+      };
+    }, [previewUrl]);
+
     if(!canCreateProduct)
     {
       return (<div className="bg-white text-gray-900 min-h-screen p-8">
@@ -21,10 +34,6 @@ export default function CreateProductForm(){
             </div>
             );
     }
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const [errorMsg, setErrorMsg] = useState('');
-    const initialState : ProductState = {message : '', errors:{}};
-    const [state, formAction, isPending] = useActionState(createProduct, initialState);
     
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -46,14 +55,6 @@ export default function CreateProductForm(){
         setPreviewUrl(null);
       }
     };
-
-    useEffect(() => {
-      return () => {
-        if (previewUrl && previewUrl.startsWith('blob:')) {
-          URL.revokeObjectURL(previewUrl);
-        }
-      };
-    }, [previewUrl]);
 
     return(
       <div className="min-h-screen w-full bg-white p-4 md:p-8">
