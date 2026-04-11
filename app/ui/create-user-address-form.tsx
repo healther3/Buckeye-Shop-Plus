@@ -7,11 +7,10 @@ import { Button } from "./Button";
 import Autocomplete from 'react-google-autocomplete';
 import Link from "next/link";
 
-export default function UserAddressForm({user_id}:{user_id : string})
+export default function UserAddressForm()
 {
     const initialState: UserAddressState = {message:'', errors:{}};
-    const CreateUserAddress = createUserAddress.bind(null, user_id);
-    const [state, formAction, isPending] = useActionState(CreateUserAddress, initialState);
+    const [state, formAction, isPending] = useActionState(createUserAddress, initialState);
     const [previewCoords, setPreviewCoords] = useState<{lat: number, lng: number} | null>(null);
 
 

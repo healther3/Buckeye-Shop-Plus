@@ -19,7 +19,7 @@ export default async function ProductPage(props: { params: Promise<{ id: string 
     const {id} = await props.params;
     const product = await fetchProduct(id);
 
-    const existsInWishList = await isInWishList(user?.id || "", id);
+    const existsInWishList = await isInWishList(id);
 
     const totalCommentPage = await fetchCommentPageByProduct(id);
     const comments: Comment[] = await fetchComments(id, currentPage);
@@ -41,7 +41,6 @@ export default async function ProductPage(props: { params: Promise<{ id: string 
             createDate={createDate}
             url={url}
             isLoggedin={isLoggedin}
-            user_id={user?.id || ""}
             existsInWL={existsInWishList || false}
         ></ProductDetails>
         <div className="space-y-6">
