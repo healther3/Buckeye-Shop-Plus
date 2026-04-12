@@ -13,7 +13,7 @@ export default function CreateCommentForm({product_id, user_id}
     const canCreateComment = hasPermission('create_comment');    
 
     const initialState : CommentState= {errors:{}, message: ""};
-    const CreateComment = createComment.bind(null,user_id || '',product_id);
+    const CreateComment = createComment.bind(null, product_id);
     const [state, formAction, isPending] = useActionState(CreateComment, initialState);
     const [rating, setRating] = useState(5);
     // console.log('Session:', session);

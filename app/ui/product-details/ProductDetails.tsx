@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
-import { addToWishList, isInWishList } from "@/app/lib/actions";
+import { addToWishList } from "@/app/lib/actions";
 import { inter } from "@/app/ui/fonts";
 import { Button } from "@/app/ui/Button";
 
@@ -20,7 +20,6 @@ interface ProductDetailsProps {
     createDate: string; 
     url: string;
     isLoggedin: boolean;
-    user_id: string;
     existsInWL: boolean;
 }
 
@@ -33,7 +32,6 @@ export default function ProductDetails({
     createDate, 
     url,
     isLoggedin,
-    user_id,
     existsInWL
 }: ProductDetailsProps) {
 
@@ -52,7 +50,7 @@ export default function ProductDetails({
 
     function handleAddToCart(){
         setIsAdded(true);
-        addToWishList(user_id, id, 1);
+        addToWishList(id, 1);
     }
 
     const cartbutton = () => {

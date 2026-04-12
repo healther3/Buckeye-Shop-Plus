@@ -378,8 +378,15 @@ export async function updateUserAvatar(id: string, prevState: UserState, formDat
 
 //#region comments
 
-export async function createComment(user_id: string, product_id: string, prevState: CommentState, formData: FormData) {
+export async function createComment(product_id: string, prevState: CommentState, formData: FormData) {
     const session = await auth();
+
+    if (!session?.user?.id) {
+        return {
+          message: 'Please login to create a comment.',
+          error: 'NOT_AUTHENTICATED'
+        };
+    }
 
     if (!can(session, 'create_comment')) {
         return {
@@ -387,6 +394,8 @@ export async function createComment(user_id: string, product_id: string, prevSta
         error: 'PERMISSION_DENIED'
       };
     }
+
+    const user_id = session.user.id;
     
     const validatedFields = CreateComment.safeParse(
         {
@@ -641,15 +650,24 @@ const WishListSchema = z.object({
 
 const WishList = WishListSchema.omit({id: true, create_date: true});
 
-export async function addToWishList(user_id: string, product_id: string, quantity: number){
+export async function addToWishList(product_id: string, quantity: number){
   const session = await auth();
 
-    if (!can(session, 'add_to_wishlist')) {
-        return {
-        message: 'Permission denied: You cannot add to wishlist.',
-        error: 'PERMISSION_DENIED'
-      };
-    }
+  if (!session?.user?.id) {
+    return {
+      message: 'Please login to add to wishlist.',
+      error: 'NOT_AUTHENTICATED'
+    };
+  }
+
+  if (!can(session, 'add_to_wishlist')) {
+    return {
+      message: 'Permission denied: You cannot add to wishlist.',
+      error: 'PERMISSION_DENIED'
+    };
+  }
+
+  const user_id = session.user.id;
   const valid = WishList.safeParse({user_id, product_id, quantity});
 
   if(!valid.success){
@@ -671,32 +689,64 @@ export async function addToWishList(user_id: string, product_id: string, quantit
   return
 }
 
-export async function isInWishList(user_id: string, product_id: string){
+export async function isInWishList(product_id: string){
+  const session = await auth();
+  
+  if (!session?.user?.id) {
+    return false;
+  }
+
+  const user_id = session.user.id;
+
   try {
     const item = await sql`
     SELECT 1 FROM wish_list WHERE product_id = ${product_id} AND user_id = ${user_id}
     `
     const exists = item.length > 0;
-    if (exists) {
-      console.log(`Product with ID ${product_id} is in the database.`);
-    } else {
-      console.log(`Product with ID ${product_id} was NOT found.`);
-    }
     return exists;
   } catch (error) {
     console.error("error finding product in wish list", error);
+    return false;
   }
 }
 
 export async function deleteListItem(id: string){
   const session = await auth();
 
-    if (!can(session, 'remove_from_wishlist')) {
-        return {
-        message: 'Permission denied: You cannot delete list item.',
-        error: 'PERMISSION_DENIED'
-      };
-    }
+  if (!session?.user?.id) {
+    return {
+      message: 'Please login to delete items.',
+      error: 'NOT_AUTHENTICATED'
+    };
+  }
+
+  if (!can(session, 'remove_from_wishlist')) {
+    return {
+      message: 'Permission denied: You cannot delete list item.',
+      error: 'PERMISSION_DENIED'
+    };
+  }
+
+  const user_id = session.user.id;
+
+  const item = await sql`
+    SELECT user_id FROM wish_list WHERE id = ${id}
+  `;
+
+  if (item.length === 0) {
+    return {
+      message: 'Item not found.',
+      error: 'NOT_FOUND'
+    };
+  }
+
+  if (item[0].user_id !== user_id) {
+    return {
+      message: 'You can only delete your own wishlist items.',
+      error: 'FORBIDDEN'
+    };
+  }
+
   await sql`
     DELETE FROM wish_list WHERE id = ${id};
   `;
@@ -705,8 +755,19 @@ export async function deleteListItem(id: string){
 }
 
 //#region user address
-export async function createUserAddress(user_id: string, prevState: UserAddressState, formData: FormData)
+export async function createUserAddress(prevState: UserAddressState, formData: FormData)
 {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        return {
+          message: 'Please login to create an address.',
+          errors: {}
+        };
+    }
+
+    const user_id = session.user.id;
+
     const validatedFields = CreateUserAddress.safeParse(
         {
             label: formData.get('label'),
