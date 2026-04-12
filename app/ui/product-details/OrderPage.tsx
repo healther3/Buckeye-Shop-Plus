@@ -44,102 +44,108 @@ export default function OrderPage( product : Product) {
     
 
     return(
-        <div className="bg-white text-gray-900 min-h-screen p-8 flex justify-center items-start">
-            <div className="w-full max-w-lg p-8 space-y-6 border border-gray-200 rounded-lg shadow-xl bg-gray-50">
+        <main className="flex items-center justify-center min-h-[calc(100vh-100px)] bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+            <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-gray-300">
                 
-                <h1 className="text-3xl font-extrabold text-gray-800 border-b border-gray-300 pb-2">
-                    🛒 Order Summary
-                </h1>
-
-                <div className="text-lg space-y-2">
-                    <p><strong>Product:</strong> <span className="font-semibold text-gray-900">{product.name}</span></p>
-                    <p><strong>Category:</strong> {product.category}</p>
-                   
-                    <p><strong>Unit Price:</strong> <span className="font-semibold text-red-700">${numericPrice.toFixed(2)}</span></p>
-                    <p>
-                        <strong>Stock Remaining:</strong> 
-                        <span className={maxStock > 0 ? "text-green-600 font-semibold" : "text-red-500 font-semibold"}>
-                            {maxStock}
-                        </span>
+                <div className="text-center mb-8">
+                    <h2 className="text-3xl font-extrabold text-gray-900">
+                        🛒 Order Summary
+                    </h2>
+                    <p className="mt-2 text-sm text-gray-500">
+                        Review your purchase before confirming
                     </p>
                 </div>
+
+                <div className="space-y-4 text-sm text-gray-700 mb-8">
+                    <div className="flex justify-between items-center pb-2 border-b border-gray-50">
+                        <span className="font-medium text-gray-500">Product</span>
+                        <span className="font-bold text-gray-900">{product.name}</span>
+                    </div>
+                    <div className="flex justify-between items-center pb-2 border-b border-gray-50">
+                        <span className="font-medium text-gray-500">Category</span>
+                        <span className="text-gray-900">{product.category}</span>
+                    </div>
+                    <div className="flex justify-between items-center pb-2 border-b border-gray-50">
+                        <span className="font-medium text-gray-500">Unit Price</span>
+                        <span className="font-bold text-red-700">${numericPrice.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                        <span className="font-medium text-gray-500">Stock Remaining</span>
+                        <span className={maxStock > 0 ? "text-green-600 font-bold" : "text-red-500 font-bold"}>
+                            {maxStock}
+                        </span>
+                    </div>
+                </div>
                 
-                <div className="pt-4 border-t border-gray-300">
-        
-                    <label htmlFor="quantity-input" className="block text-xl font-bold mb-3 text-gray-700">Select Quantity:</label>
-                    <div className="flex items-center space-x-3">
-                        
-                        <button 
-                            onClick={decrement}
-                            disabled={!isOrderReady || quantity <= 1}
-                        
-                            className={`flex justify-center items-center p-3 text-xl font-bold rounded-full w-12 h-12 transition ${
-                                !isOrderReady || quantity <= 1
-                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                                    : 'bg-red-700 text-white hover:bg-red-600' 
-                            }`}
-                        >
-                            -
-                        </button>
-                        
-                        <input 
-                            id="quantity-input"
-                            onChange={handleChange} 
-                            type="number" 
-                            max={maxStock} 
-                            min={maxStock > 0 ? 1 : 0} 
-                            value={quantity}
-                            disabled={!isOrderReady}
-                         
-                            className="w-20 text-center p-3 text-xl font-bold rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-700 bg-white border border-gray-300"
-                        />
-                        
-                        <button 
-                            onClick={increment}
-                            disabled={!isOrderReady || quantity >= maxStock}
+                <div className="pt-4 border-t border-gray-100 mb-6">
+                    <div className="flex items-center justify-between">
+                        <label htmlFor="quantity-input" className="text-sm font-medium text-gray-500 uppercase tracking-wider">Quantity</label>
+                        <div className="flex items-center space-x-4">
+                            <button 
+                                onClick={decrement}
+                                disabled={!isOrderReady || quantity <= 1}
+                                className={`flex justify-center items-center w-9 h-9 rounded-full transition-all duration-200 ${
+                                    !isOrderReady || quantity <= 1
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                        : 'bg-red-700 text-white hover:bg-red-600 shadow-sm active:scale-95' 
+                                }`}
+                            >
+                                <span className="text-xl font-bold">-</span>
+                            </button>
                             
-                            className={`p-3 text-xl font-bold rounded-full w-12 h-12 flex justify-center items-center transition ${
-                                !isOrderReady || quantity >= maxStock
-                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                                    : 'bg-red-700 text-white hover:bg-red-600' 
-                            }`}
-                        >
-                            +
-                        </button>
+                            <input 
+                                id="quantity-input"
+                                onChange={handleChange} 
+                                type="number" 
+                                max={maxStock} 
+                                min={maxStock > 0 ? 1 : 0} 
+                                value={quantity}
+                                disabled={!isOrderReady}
+                                className="w-12 text-center py-1 text-lg font-bold text-gray-900 border-b border-gray-200 focus:outline-none focus:border-red-700 bg-transparent"
+                            />
+                            
+                            <button 
+                                onClick={increment}
+                                disabled={!isOrderReady || quantity >= maxStock}
+                                className={`flex justify-center items-center w-9 h-9 rounded-full transition-all duration-200 ${
+                                    !isOrderReady || quantity >= maxStock
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                        : 'bg-red-700 text-white hover:bg-red-600 shadow-md active:scale-95' 
+                                }`}
+                            >
+                                <span className="text-xl font-bold">+</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div className="text-2xl font-extrabold text-right pt-4 border-t border-gray-300">
-                    
-                    <p>Total: <span className="text-red-700">${totalPrice}</span></p>
+                <div className="flex justify-between items-center py-4 border-t border-gray-100 mb-6">
+                    <span className="text-base font-bold text-gray-900">Total Price</span>
+                    <span className="text-2xl font-extrabold text-red-700">${totalPrice}</span>
                 </div>
 
-                <div className="mt-6 flex justify-between space-x-4">
-                    
-                    {/* Cancel Button */}
-                    <Link href={`/products/${id}`} className="flex-1">
-                 
-                        <button
-                            className="w-full px-4 py-3 font-semibold rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition shadow-md"
-                        >
-                            Cancel
-                        </button>
-                    </Link>
-                    
-                    {/* Confirm Purchase Button */}
+                <div className="space-y-4">
                     <button
-                        
-                        className={`flex-1 px-4 py-3 font-semibold rounded-lg transition shadow-lg ${
+                        className={`w-full py-4 px-6 font-bold rounded-xl transition-all duration-200 shadow-lg ${
                             isOrderReady 
-                                ? 'bg-red-700 text-white hover:bg-red-600 shadow-red-500/50' 
-                                : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                                ? 'bg-red-700 text-white hover:bg-red-600 shadow-red-100 hover:shadow-red-200 active:scale-[0.98]' 
+                                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                         }`}
                         disabled={!isOrderReady}
                     >
                         Confirm Purchase
                     </button>
+                    
+                    <div className="text-center pt-2">
+                        <Link 
+                            href={`/products/${id}`} 
+                            className="text-sm font-medium text-gray-500 hover:text-red-700 transition-colors"
+                        >
+                            Cancel and go back
+                        </Link>
+                    </div>
                 </div>
             </div>
-        </div>
+        </main>
     );
 }
