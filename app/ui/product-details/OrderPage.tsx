@@ -31,6 +31,8 @@ export default function OrderPage( product : Product) {
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         let value = Number(e.target.value);
         if (isNaN(value)) return;
+        if (!Number.isFinite(value)) return;
+        value = Math.trunc(value);
         if (value < 1) value = maxStock > 0 ? 1 : 0; 
         if (value > maxStock) value = maxStock;
         setQuantity(value);
@@ -97,6 +99,8 @@ export default function OrderPage( product : Product) {
                                 id="quantity-input"
                                 onChange={handleChange} 
                                 type="number" 
+                                step={1}
+                                inputMode='numeric'
                                 max={maxStock} 
                                 min={maxStock > 0 ? 1 : 0} 
                                 value={quantity}
