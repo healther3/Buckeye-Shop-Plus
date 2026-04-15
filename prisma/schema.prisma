@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String?
+  email      String?  @unique
+  password   String?
+  createDate String   @map("create_date")
+  imageUrl   String?  @default("/avatars/1.jpg") @map("image_url")
+
+  comments  Comment[]
+  wishList  WishListItem[]
+  addresses UserAddress[]
+  userRoles UserRole[]
+
+  @@map("users")
+}
+
+model Product {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String?
+  stock      String?
+  category   String?
+  price      Decimal? @db.Decimal
+  createDate String   @map("create_date")
+  url        String?
+
+  comments Comment[]
+  wishList WishListItem[]
+
+  @@index([category], name: "idx_products_category")
+  @@map("products")
+}
+
+model Comment {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  productId  String   @map("product_id") @db.Uuid
+  comment    String?
+  createDate DateTime @default(dbgenerated("(now() AT TIME ZONE 'utc')")) @map("create_date") @db.Timestamptz
+  rating     Int      @db.SmallInt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId], name: "idx_comments_product_id")
+  @@index([userId], name: "idx_comments_user_id")
+  @@map("comments")
+}
+
+model WishListItem {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  productId String   @map("product_id") @db.Uuid
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId], name: "idx_wish_list_user_id")
+  @@map("wish_list")
+}
+
+model UserAddress {
+  id              String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String  @map("user_id") @db.Uuid
+  label           String
+  recipientName   String  @map("recipient_name")
+  phoneNumber     String  @map("phone_number")
+  state           String
+  city            String
+  zipCode         String  @map("zip_code")
+  streetAddress1  String  @map("street_address_1")
+  streetAddress2  String? @map("street_address_2")
+  isDefault       Boolean @default(false) @map("is_default")
+  latitude        Float?
+  longitude       Float?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], name: "idx_user_address_user_id")
+  @@map("user_address")
+}
+
+model Role {
+  id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type String @unique
+
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String @unique
+
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String @map("role_id") @db.Uuid
+  permissionId String @map("permission_id") @db.Uuid
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model UserRole {
+  userId String @map("user_id") @db.Uuid
+  roleId String @map("role_id") @db.Uuid
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@index([userId], name: "idx_user_roles_user_id")
+  @@map("user_roles")
+}
